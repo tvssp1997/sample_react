@@ -26,9 +26,10 @@ jobs:
           echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
           # Extract other relevant information from the payload as needed
           
-      - name: Send Event to EventBridge
+      - name: Create Event Bridge Rule and Send Event to EventBridge
         run: |
-          aws events put-events --entries file://event.json
+          aws events create-event-bus --name webhook-event-bridge --event-source-name github --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"AllowAll\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"events:PutEvents\"}]}"
+          aws events put-events --entries '[{"Source":"custom.github","DetailType":"webhook.event","Detail":"{\"message\": \"Webhook event received from GitHub\"}"}]' --event-bus-name webhook-event-bridge
         env:
           ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
           ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
