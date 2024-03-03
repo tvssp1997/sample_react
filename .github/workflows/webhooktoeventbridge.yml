@@ -2,8 +2,11 @@ name: Send Code Scanning Alerts to EventBridge
 
 on:
   workflow_dispatch:
+  # code_scanning_alert:
+  # code_scanning_analysis:
   repository_dispatch:
-    types: [code_scanning_alert_created]
+    types: [code_scanning_alert_created,codeql-action]
+  
 
 jobs:
   send-to-eventbridge:
@@ -23,11 +26,10 @@ jobs:
           echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
           # Extract other relevant information from the payload as needed
           
-
-      # - name: Send Event to EventBridge
-      #   run: |
-      #     aws events put-events --entries file://event.json
-      #   env:
-      #     ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
-      #     ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
-      #     # Add other environment variables as needed
+      - name: Send Event to EventBridge
+        run: |
+          aws events put-events --entries file://event.json
+        env:
+          ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
+          ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
+          # Add other environment variables as needed
