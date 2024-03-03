@@ -1,0 +1,30 @@
+name: CodeQL Analysis
+on: [workflow_dispatch]
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get Code
+              uses: actions/checkout@v3
+            - name: Install NodeJS
+              uses: actions/setup-node@v3
+              with:
+                node-version: 18
+            - name: Install Dependencies
+              run: npm ci
+            - name: Run Tests
+              run: npm test
+            - name: Initialize CodeQL
+              uses: github/codeql-action/setup@v2
+              with:
+                languages: javascript
+        
+            - name: Run CodeQL analysis
+              uses: github/codeql-action/analyze@v2
+              with:
+                queries: ./path/to/your/codeql/queries
+                # Other configuration options such as paths to include/exclude, etc.
+        
+            - name: Upload SARIF results
+              uses: github/codeql-action/upload-sarif@v2
+                
