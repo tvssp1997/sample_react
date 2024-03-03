@@ -1,0 +1,32 @@
+name: Send Code Scanning Alerts to EventBridge
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [code_scanning_alert_created]
+
+jobs:
+  send-to-eventbridge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # - name: Parse Webhook Payload
+      #   id: parse-payload
+      #   run: |
+      #     echo "::set-output name=alert_title::${{ github.event.client_payload.alert_title }}"
+      #     echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
+      #     # Extract other relevant information from the payload as needed
+
+      # - name: Send Event to EventBridge
+      #   run: |
+      #     aws events put-events --entries file://event.json
+      #   env:
+      #     ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
+      #     ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
+      #     # Add other environment variables as needed
