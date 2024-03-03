@@ -15,16 +15,16 @@ jobs:
             - name: Run Tests
               run: npm test
             - name: Initialize CodeQL
-              uses: github/codeql-action/setup@v2
+              uses: github/codeql-action/setup@v3
               with:
                 languages: javascript
         
             - name: Run CodeQL analysis
-              uses: github/codeql-action/analyze@v2
+              uses: github/codeql-action/analyze@v3
               with:
                 queries: ./path/to/your/codeql/queries
                 # Other configuration options such as paths to include/exclude, etc.
         
             - name: Upload SARIF results
-              uses: github/codeql-action/upload-sarif@v2
+              uses: github/codeql-action/upload-sarif@v3
                 
