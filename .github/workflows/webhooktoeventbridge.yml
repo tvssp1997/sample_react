@@ -16,12 +16,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # - name: Parse Webhook Payload
-      #   id: parse-payload
-      #   run: |
-      #     echo "::set-output name=alert_title::${{ github.event.client_payload.alert_title }}"
-      #     echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
-      #     # Extract other relevant information from the payload as needed
+      - name: Parse Webhook Payload
+        id: parse-payload
+        run: |
+          echo "::set-output name=alert_title::${{ github.event.client_payload.alert_title }}"
+          echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
+          # Extract other relevant information from the payload as needed
+          
 
       # - name: Send Event to EventBridge
       #   run: |
