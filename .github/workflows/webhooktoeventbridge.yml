@@ -1,36 +1,55 @@
-name: Send Code Scanning Alerts to EventBridge
+# name: Send Code Scanning Alerts to EventBridge
 
-on:
-  workflow_dispatch:
-  # code_scanning_alert:
-  # code_scanning_analysis:
-  repository_dispatch:
-    types: [code_scanning_alert_created,codeql-action]
+# on:
+#   workflow_dispatch:
+#   # code_scanning_alert:
+#   # code_scanning_analysis:
+#   repository_dispatch:
+#     types: [code_scanning_alert_created,codeql-action]
   
 
+# jobs:
+#   send-to-eventbridge:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: us-east-1
+
+#       - name: Parse Webhook Payload
+#         id: parse-payload
+#         run: |
+#           echo "::set-output name=alert_title::${{ github.event.client_payload.alert_title }}"
+#           echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
+#           # Extract other relevant information from the payload as needed
+          
+#       - name: Create Event Bridge Rule and Send Event to EventBridge
+#         run: |
+#           aws events create-event-bus --name webhook-event-bridge --event-source-name github --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"AllowAll\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"events:PutEvents\"}]}"
+#           aws events put-events --entries '[{"Source":"custom.github","DetailType":"webhook.event","Detail":"{\"message\": \"Webhook event received from GitHub\"}"}]' --event-bus-name webhook-event-bridge
+#         env:
+#           ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
+#           ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
+#           # Add other environment variables as needed
+
+
+name: CodeQL Action Workflow
+
+on:
+  workflow_run:
+    workflows: ["CodeQL Analysis"]
+    types:
+      - completed
+
 jobs:
-  send-to-eventbridge:
+  notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Parse Webhook Payload
-        id: parse-payload
+      - name: Check if CodeQL action completed successfully
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         run: |
-          echo "::set-output name=alert_title::${{ github.event.client_payload.alert_title }}"
-          echo "::set-output name=alert_description::${{ github.event.client_payload.alert_description }}"
-          # Extract other relevant information from the payload as needed
-          
-      - name: Create Event Bridge Rule and Send Event to EventBridge
-        run: |
-          aws events create-event-bus --name webhook-event-bridge --event-source-name github --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"AllowAll\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"events:PutEvents\"}]}"
-          aws events put-events --entries '[{"Source":"custom.github","DetailType":"webhook.event","Detail":"{\"message\": \"Webhook event received from GitHub\"}"}]' --event-bus-name webhook-event-bridge
-        env:
-          ALERT_TITLE: ${{ steps.parse-payload.outputs.alert_title }}
-          ALERT_DESCRIPTION: ${{ steps.parse-payload.outputs.alert_description }}
-          # Add other environment variables as needed
+          # Add your notification logic here
+          echo "CodeQL analysis completed successfully."
