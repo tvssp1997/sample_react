@@ -19,4 +19,4 @@ jobs:
 
     - name: Upload YAML files to Azure Storage
       run: |
-        az storage blob upload-batch --source './path/to/yaml/files/**/*.txt' --destination ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }} --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+        az storage blob upload-batch --source './**/*.txt' --destination ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }} --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
